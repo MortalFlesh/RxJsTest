@@ -3,9 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Rx JS - test</title>
-    <script src="dist/index.js"></script>
 </head>
 <body>
-    
+    <div id="autocomplete">
+        <form>
+            <div>
+                <input type="text"
+                       class="ac-input"
+                       autocomplete="off"
+                       style="width: 400px; padding: 10px 15px;"
+                       placeholder="Hledat">
+            </div>
+
+            <div class="ac-options">
+
+            </div>
+        </form>
+    </div>
+
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="dist/index.js"></script>
 </body>
 </html>
