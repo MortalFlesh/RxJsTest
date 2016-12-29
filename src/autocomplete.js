@@ -8,13 +8,20 @@ export default class Autocomplete {
 
     init() {
         /*
-         * todo
-         * - (done) start subscribing on keyup
+         * - start subscribing on keyup
          * - onkeyup
-         *      - (done) clear options
+         *      - clear options
          *      - delay 300ms between keyups
          *      - after delay fetch response
          *      - show response in ac-options
+         *
+         * --+--+--+--+--+-----------------------------------------> t
+         *   \  \  \  \  \
+         *    -- -- -- -- --fetch
+         *                      \
+         *                       -response
+         *                              \
+         *                               -show
          */
 
         Observable.fromEvent(this.getInput(), 'keyup')
@@ -30,8 +37,10 @@ export default class Autocomplete {
     /** @private */
     keyupHandler() {
         this.clearOptions();
+        const value = this.getInput().val();
 
-        return this.performRequest();
+        return Observable.interval(300).take(1)
+            .switchMap((tick) => this.performRequest(value));
     }
 
     /** @private */
@@ -41,12 +50,37 @@ export default class Autocomplete {
     }
 
     /** @private */
-    performRequest() {
-        return new Promise((resolve, reject) => {
-            const timeout = Observable.interval(1000).take(1);
+    performRequest(value) {
+        console.log(`request (${value})->`);
 
-            timeout.subscribe((x) => resolve('response'));
+        return fetch('https://jsonplaceholder.typicode.com/users/1')
+            .then((response) => response.json())
+            .then(({email}) => {
+                console.log(`->response(${value}): `, email);
+
+                return email;
+            });
+    }
+
+    /** @private */
+    performRequestLocal(value) {
+        console.log(`request (${value})->`);
+
+        return new Promise((resolve, reject) => {
+            const period = this.random(600, 1000);
+            const timeout = Observable.interval(period).take(1);
+
+            timeout.subscribe((x) => {
+                console.log(`->response(${value}) [${period} ms]`);
+
+                resolve(`response (${value})`);
+            });
         });
+    }
+
+    /** @private */
+    random(minValue, maxValue) {
+        return minValue + Math.floor((Math.random() * (maxValue - minValue)) + 1);
     }
 
     /** @private */
